@@ -1,0 +1,14 @@
+[
+    {
+        "id": 1,
+        "brand": "Wiscat",
+        "description": "Best brand from USA",
+        "formular": []
+    },
+    {
+        "id": 2,
+        "brand": "Scott",
+        "description": "Best brand from NA",
+        "formular": []
+    }
+]

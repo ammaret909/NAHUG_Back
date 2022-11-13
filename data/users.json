@@ -1,0 +1,20 @@
+[
+    {
+        "id": 1,
+        "username": "admin",
+        "password": "admin123",
+        "name": "admin",
+        "email": "admin@gmail.com",
+        "permissionLevel": 2,
+        "cats": []
+    },
+    {
+        "id": 2,
+        "username": "yone",
+        "password": "kenshi",
+        "name": "kenshi yonezu",
+        "email": "kenshi@gmail.com",
+        "permissionLevel": 1,
+        "cats": []
+    }
+]
