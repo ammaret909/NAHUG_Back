@@ -1,111 +1,164 @@
 const express = require('express');
 
-const foods = require('../data/foods');
+const Food = require('../model/food');
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
-    res.send(foods);
+router.get('/', async (req, res) => {
+    const result = await Food.find({});
+    res.send(result);
 });
 
-router.get('/:brand', (req, res) => {
-    const foodId = (req.params.brand);
-    const food = foods.find((food) => food.brand === foodId);
+router.get('/:id', async (req, res) => {
+    const foodId = (req.params.id);
+    const food = await Food.find({ _id: foodId });
     res.json(food);
 });
 
-router.get('/:brand/:id', (req, res) => {
-    const foodId = (req.params.brand);
-    const food = foods.find((food) => food.brand === foodId);
+// router.get('/:brand/:id', (req, res) => {
+//     const foodId = (req.params.brand);
+//     const food = foods.find((food) => food.brand === foodId);
 
-    const formularData = food.formular;
+//     const formularData = food.formular;
 
-    const formularId = Number.parseInt(req.params.id);
-    const formular = formularData.find((food) => food.id === formularId);
-    res.json(formular);
+//     const formularId = Number.parseInt(req.params.id);
+//     const formular = formularData.find((food) => food.id === formularId);
+//     res.json(formular);
+// });
+
+router.post("/", async (req, res) => {
+    try {
+        const { name, description } = req.body;
+        if (!(name && description)) {
+            res.status(404).send("All input is required");
+        }
+
+        const food = await Food.create({
+            name,
+            description,
+            formular: {}
+        })
+
+        res.status(201).json(food);
+    } catch (err) {
+        console.log(err);
+    }
 });
 
-let currentId = 2;
-router.post('/', (req, res) => {
-    const { brand, description } = req.body;
-    const food = {
-        id: ++currentId,
-        brand,
-        description,
-        formular: [],
-    };
-    foods.push(food);
-    res.json(foods);
-    res.sendStatus(201);
+router.post('/:id', async (req, res) => {
+    try {
+        const foodId = (req.params.id);
+        const query = { _id: foodId };
+        const { form_name, form_description } = req.body;
+        if (!(form_name && form_description)) {
+            res.status(404).send("All input is required");
+        }
+
+        const options = {
+            new: true,
+            upsert: true,
+        };
+
+        const result = await Food.findOneAndUpdate(
+            query,
+            {
+                $push: {
+                    formular: {
+                        form_name: form_name,
+                        form_description: form_description,
+                    }
+                }
+            },
+            options).lean().exec();
+        res.send(result);
+    } catch (err) {
+        console.log(err);
+    }
 });
 
 
-let formularId = 0;
-router.post('/:brand', (req, res) => {
-    const foodId = (req.params.brand);
-    const food = foods.find((food) => food.brand === foodId);
-
+router.put('/:id', async (req, res) => {
     const { name, description } = req.body;
+    const foodId = (req.params.id);
+    const query = { _id: foodId };
+
     const data = {
-        id: ++formularId,
-        name,
-        description,
-    };
+        $set: {
+            "name": name,
+            "description": description,
+        }
+    }
 
-    food.formular.push(data);
-    res.json(foods);
-});
-
-
-router.put('/:brand', (req, res) => {
-    const { brand, description } = req.body;
-    const foodId = (req.params.brand);
-    const food = foods.find((food) => food.brand === foodId);
-
-    food.brand = brand;
-    food.description = description;
-
-    res.json(food);
+    const result = await Food.updateOne(query, data);
+    console.log(
+        `${result.matchedCount} document(s) matched the filter, updated ${result.modifiedCount} document(s)`,
+    );
+    res.sendStatus(200);
 })
 
-router.put('/:brand/:id', (req, res) => {
-    const foodId = (req.params.brand);
-    const food = foods.find((food) => food.brand === foodId);
+// router.put('/:brand/:id', (req, res) => {
+//     const foodId = (req.params.brand);
+//     const food = foods.find((food) => food.brand === foodId);
 
-    const formularData = food.formular;
+//     const formularData = food.formular;
 
-    const formularId = Number.parseInt(req.params.id);
-    const formular = formularData.find((food) => food.id === formularId);
+//     const formularId = Number.parseInt(req.params.id);
+//     const formular = formularData.find((food) => food.id === formularId);
 
-    const { name, description } = req.body;
-    formular.name = name;
-    formular.description = description;
+//     const { name, description } = req.body;
+//     formular.name = name;
+//     formular.description = description;
 
-    res.json(food);
-})
+//     res.json(food);
+// })
 
-router.delete('/:brand', (req, res) => {
-    const foodId = (req.params.brand);
-    const food = foods.findIndex((food) => food.brand === foodId);
-
-    foods.splice(food, 1);
-    res.json(foods);
+router.delete('/:id', async (req, res) => {
+    const foodId = (req.params.id);
+    const query = { _id: foodId };
+    const result = await Food.deleteOne(query);
+    if (result.deletedCount === 1) {
+        console.log("Successfully deleted one document.");
+    } else {
+        console.log("No documents matched the query. Deleted 0 documents.");
+    }
     res.sendStatus(204);
 });
 
-router.delete('/:brand/:id', (req, res) => {
-    const foodId = (req.params.brand);
-    const food = foods.find((food) => food.brand === foodId);
-    const foodIndex = foods.findIndex((food) => food.brand === foodId);
+router.delete('/:id/:formId', async (req, res) => {
+    try {
+        const foodId = (req.params.id);
+        const query = { _id: foodId };
 
-    const formularData = food.formular;
-
-    const formularId = Number.parseInt(req.params.id);
-    const formularIndex = formularData.findIndex((food) => food.id === formularId);
-
-    foods[foodIndex].formular.splice(formularIndex, 1);
-    res.json(foods);
-    res.sendStatus(204);
+        const result = await Food.updateOne(
+            query,
+            {
+                $pull: {
+                    formular: {
+                        _id: req.params.formId
+                    }
+                }
+            },
+            { multi: true }
+        )
+        res.send(result);
+    } catch (err) {
+        console.log(err);
+    }
 });
+
+// router.delete('/:brand/:id', (req, res) => {
+//     const foodId = (req.params.brand);
+//     const food = foods.find((food) => food.brand === foodId);
+//     const foodIndex = foods.findIndex((food) => food.brand === foodId);
+
+//     const formularData = food.formular;
+
+//     const formularId = Number.parseInt(req.params.id);
+//     const formularIndex = formularData.findIndex((food) => food.id === formularId);
+
+//     foods[foodIndex].formular.splice(formularIndex, 1);
+//     res.json(foods);
+//     res.sendStatus(204);
+// });
 
 module.exports = router;

@@ -1,25 +1,32 @@
-const express = require('express');
+require('dotenv').config();
+require('./config/database').connect();
 
-const userRoutes = require('./routes/users');
+const express = require('express');
+const cors = require('cors');
+const auth = require('./middleware/auth');
+
+const loginRoutes = require('./routes/login');
+const registerRoutes = require('./routes/register');
+const catRoutes = require('./routes/cats');
+// const userRoutes = require('./routes/users');
 const foodsRoutes = require('./routes/foods');
 // const vaccineRoutes = require('./routes/vaccines');
-const cors = require('cors');
 
 const app = express();
-
-
 
 // // Setting up middleware
 app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
+
 // Setting up routes
-app.use('/users', userRoutes);
-app.use('/foods', foodsRoutes);
+app.use('/login', loginRoutes);
+app.use('/register', registerRoutes);
+app.use('/cats', auth, catRoutes);
+app.use('/foods', auth, foodsRoutes);
+// app.use('/users', userRoutes);
+// app.use('/foods', foodsRoutes);
 // app.use('/vaccines', vaccineRoutes);
 
-// Creating a server
-app.listen(8080, () => {
-    console.log('Listening on port 8080');
-});
+module.exports = app;
