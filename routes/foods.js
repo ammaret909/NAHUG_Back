@@ -96,21 +96,29 @@ router.put('/:id', async (req, res) => {
     res.sendStatus(200);
 })
 
-// router.put('/:brand/:id', (req, res) => {
-//     const foodId = (req.params.brand);
-//     const food = foods.find((food) => food.brand === foodId);
+router.put('/:id/:formId', async (req, res) => {
+    try {
+        const { form_name, form_description } = req.body;
+        const foodId = (req.params.id);
 
-//     const formularData = food.formular;
-
-//     const formularId = Number.parseInt(req.params.id);
-//     const formular = formularData.find((food) => food.id === formularId);
-
-//     const { name, description } = req.body;
-//     formular.name = name;
-//     formular.description = description;
-
-//     res.json(food);
-// })
+        const result = await Food.updateOne(
+            {
+                _id: foodId,
+                "formular._id": req.params.formId
+            }
+            ,
+            {
+                $set: {
+                    "formular.$.form_name": form_name,
+                    "formular.$.form_description": form_description,
+                }
+            }
+        )
+        res.send(result);
+    } catch (err) {
+        console.log(err);
+    }
+})
 
 router.delete('/:id', async (req, res) => {
     const foodId = (req.params.id);
@@ -145,20 +153,5 @@ router.delete('/:id/:formId', async (req, res) => {
         console.log(err);
     }
 });
-
-// router.delete('/:brand/:id', (req, res) => {
-//     const foodId = (req.params.brand);
-//     const food = foods.find((food) => food.brand === foodId);
-//     const foodIndex = foods.findIndex((food) => food.brand === foodId);
-
-//     const formularData = food.formular;
-
-//     const formularId = Number.parseInt(req.params.id);
-//     const formularIndex = formularData.findIndex((food) => food.id === formularId);
-
-//     foods[foodIndex].formular.splice(formularIndex, 1);
-//     res.json(foods);
-//     res.sendStatus(204);
-// });
 
 module.exports = router;
