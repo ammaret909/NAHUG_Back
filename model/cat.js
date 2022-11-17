@@ -1,15 +1,19 @@
 const mongoose = require('mongoose');
 
 const catSchema = new mongoose.Schema({
-    name: { type: String, default: null },
-    year: { type: Number, default: 0 },
-    month: { type: Number, default: 0 },
-    weight: { type: Number, default: 0 },
-    email: { type: String, default: null },
-    vaccine: {
-        vac_id: { type: Number, default: 0 },
-        vac_date: { type: Date, default: Date.now }
-    },
+    name: { type: String },
+    email: { type: String },
+    year: { type: Number },
+    month: { type: Number },
+    weight: { type: Number },
+    image: { type: String },
+    food: { type: String },
+    portion: { type: Number },
+    vaccine: [{
+        name: { type: String },
+        date: { type: Date, default: Date.now },
+        times: { type: Number },
+    }]
 });
 
 module.exports = mongoose.model('Cat', catSchema);
