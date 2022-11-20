@@ -7,12 +7,14 @@ const catSchema = new mongoose.Schema({
     month: { type: Number },
     weight: { type: Number },
     image: { type: String },
-    food: { type: String },
+    food: { type: String, default: "normal" },
     portion: { type: Number },
     vaccine: [{
         name: { type: String },
-        date: { type: Date, default: Date.now },
+        startDate: { type: Date },
+        endDate: { type: Date },
         times: { type: Number },
+        status: { type: String, default: "normal" },
     }]
 });
 

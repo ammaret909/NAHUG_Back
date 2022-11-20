@@ -5,13 +5,13 @@ const Food = require('../model/food');
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-    const result = await Food.find({});
+    const result = await Food.find();
     res.send(result);
 });
 
 router.get('/:id', async (req, res) => {
     const foodId = (req.params.id);
-    const food = await Food.find({ _id: foodId });
+    const food = await Food.findOne({ _id: foodId });
     res.json(food);
 });
 

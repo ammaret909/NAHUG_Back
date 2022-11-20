@@ -11,7 +11,7 @@ router.get('/', async (req, res) => {
 
 router.get('/:name', async (req, res) => {
     const vacName = (req.params.name);
-    const vac = await Vaccine.find({ name: vacName });
+    const vac = await Vaccine.findOne({ name: vacName });
     res.json(vac);
 });
 

@@ -6,13 +6,13 @@ const router = express.Router();
 
 router.get('/:id', async (req, res) => {
     const userId = (req.params.id);
-    const result = await User.findById({ _id: userId })
+    const result = await User.findById({ _id: userId });
     res.json(result);
 });
 
 router.get('/:id/cats/', async (req, res) => {
     const userId = (req.params.id);
-    const result = await User.findById({ _id: userId })
+    const result = await User.findById({ _id: userId });
     res.send(result.cats);
 });
 
