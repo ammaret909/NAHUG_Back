@@ -28,15 +28,15 @@ router.get('/:id', async (req, res) => {
 
 router.post("/", async (req, res) => {
     try {
-        const { name, description } = req.body;
-        if (!(name && description)) {
+        const { name, description, image } = req.body;
+        if (!(name && description && image)) {
             res.status(404).send("All input is required");
         }
 
         const food = await Food.create({
             name,
             description,
-            formular: {}
+            image
         })
 
         res.status(201).json(food);
@@ -49,8 +49,8 @@ router.post('/:id', async (req, res) => {
     try {
         const foodId = (req.params.id);
         const query = { _id: foodId };
-        const { form_name, form_description } = req.body;
-        if (!(form_name && form_description)) {
+        const { form_name, form_description, kgCal, image } = req.body;
+        if (!(form_name && form_description && kgCal && image)) {
             res.status(404).send("All input is required");
         }
 
@@ -66,6 +66,8 @@ router.post('/:id', async (req, res) => {
                     formular: {
                         form_name: form_name,
                         form_description: form_description,
+                        image: image,
+                        kgCal: kgCal
                     }
                 }
             },
@@ -78,7 +80,7 @@ router.post('/:id', async (req, res) => {
 
 
 router.put('/:id', async (req, res) => {
-    const { name, description } = req.body;
+    const { name, description, image } = req.body;
     const foodId = (req.params.id);
     const query = { _id: foodId };
 
@@ -86,6 +88,7 @@ router.put('/:id', async (req, res) => {
         $set: {
             "name": name,
             "description": description,
+            "image": image
         }
     }
 
@@ -98,7 +101,10 @@ router.put('/:id', async (req, res) => {
 
 router.put('/:id/:formId', async (req, res) => {
     try {
-        const { form_name, form_description } = req.body;
+        const { form_name, form_description, kgCal, image } = req.body;
+        if (!(form_name && form_description && kgCal && image)) {
+            res.status(404).send("All input is required");
+        }
         const foodId = (req.params.id);
 
         const result = await Food.updateOne(
@@ -111,6 +117,8 @@ router.put('/:id/:formId', async (req, res) => {
                 $set: {
                     "formular.$.form_name": form_name,
                     "formular.$.form_description": form_description,
+                    "formular.$.image": image,
+                    "formular.$.kgCal": kgCal,
                 }
             }
         )

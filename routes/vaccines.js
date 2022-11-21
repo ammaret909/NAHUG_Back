@@ -33,6 +33,11 @@ router.post("/", async (req, res) => {
             res.status(404).send("All input is required");
         }
 
+        const oldVaccine = await Vaccine.findOne({ name: name });
+        if (oldVaccine) {
+            return res.status(409).send("Vaccine already exist.")
+        }
+
         const vac = await Vaccine.create({
             name: name,
         })
