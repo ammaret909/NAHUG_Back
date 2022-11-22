@@ -19,7 +19,6 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json({ limit: '50mb' }));
 
-
 // Setting up routes
 app.use('/login', loginRoutes);
 app.use('/register', registerRoutes);

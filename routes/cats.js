@@ -83,8 +83,8 @@ router.post("/:id/vaccines", async (req, res) => {
 router.put("/:id/food", async (req, res) => {
     try {
         const catId = (req.params.id);
-        const { food } = req.body;
-        if (!(food)) {
+        const { food, portion } = req.body;
+        if (!(food && portion)) {
             return res.status(404).send("All input is required");
         }
 
@@ -94,6 +94,7 @@ router.put("/:id/food", async (req, res) => {
                 $set:
                 {
                     food: food,
+                    portion: portion
                 }
             }
         )
